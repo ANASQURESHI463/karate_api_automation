@@ -2,6 +2,7 @@ name: Karate API Tests
 
 on:
   push:
+    branches: [ "main" ]
   pull_request:
 
 jobs:
@@ -9,24 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout repo
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2. Setup Java 17 (MANDATORY for Karate 1.4.1)
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+          cache: maven
 
-      - name: Verify Java version
-        run: java -version
+      # 3. Verify environment
+      - name: Verify Java & Maven
+        run: |
+          java -version
+          mvn -version
 
-      - name: Run Maven tests
-        run: mvn clean test
+      # 4. Clean workspace (prevents old reports)
+      - name: Clean previous build
+        run: mvn clean
 
+      # 5. Run Karate tests
+      - name: Run tests
+        run: mvn test
+
+      # 6. Upload Karate HTML/JSON reports (always fresh)
       - name: Upload Karate Reports
-        uses: actions/upload-artifact@v4
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: karate-reports
-          path: target/karate-reports
+          path: |
+            target/karate-reports/
+            target/surefire-reports/

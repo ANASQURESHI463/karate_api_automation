@@ -50,7 +50,7 @@ Feature: Check Available Rooms & book the valid room
     When method GET
     Then status 200
     * def validRooms = karate.filter(response.rooms, function(x){ return x.roomPrice > 0 })
-    * def roomId = response.rooms[0].roomid
+    * def roomId = response.rooms[1].roomid
     * def today = java.time.LocalDate.now().plusDays(1).toString()
     * def checkout = java.time.LocalDate.now().plusDays(3).toString()
     * def bookingRequest =
